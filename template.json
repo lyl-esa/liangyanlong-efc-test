@@ -1,13 +1,13 @@
 {
-  "templateName": "Node 原生 · 原生路由",
+  "templateName": "Express + app.listen 留言板",
   "templateId": "{{TEMPLATE_ID}}",
-  "framework": "node",
-  "description": "纯 Node.js http.createServer，无框架依赖，演示 URL 路由匹配与手动 fs 静态托管。",
-  "icon": "🟢",
+  "framework": "express",
+  "description": "Express 经典 app.listen 风格，演示异步路由包装与全局错误处理中间件。",
+  "icon": "🎧",
   "category": "starter",
   "entry": "server.js",
-  "rootDirectory": "/backend-tests/node",
+  "rootDirectory": "/backend-tests/express-listen",
   "deployUrl": "{{DEPLOY_URL}}",
   "demoUrl": "{{DEMO_URL}}",
-  "tags": ["node", "原生", "零依赖", "路由"]
+  "tags": ["express", "listen", "async", "错误处理", "留言板"]
 }
