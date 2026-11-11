@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node.js Example</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark')</script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <img class="nav-logo" src="https://cdn.simpleicons.org/nodedotjs" alt="Node.js" onerror="this.style.display='none'" />
+      <span class="nav-title">Node.js</span>
+      <span class="nav-version">http</span>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Node.js Example</h1>
+      <p class="tagline">Raw Node.js http module — no framework, just the standard library.</p>
+      <pre class="code-block"><code><span class="k">const</span> { createServer } = <span class="f">require</span>(<span class="s">'http'</span>)
+
+<span class="k">const</span> server = <span class="f">createServer</span>((req, res) => {
+  <span class="k">const</span> url = <span class="k">new</span> <span class="f">URL</span>(req.url, <span class="s">'http://localhost'</span>)
+
+  <span class="k">if</span> (url.pathname === <span class="s">'/api/health'</span>) {
+    res.<span class="f">end</span>(<span class="f">JSON</span>.<span class="f">stringify</span>({ ok: <span class="k">true</span> }))
+  }
+})
+
+server.<span class="f">listen</span>(3000)</code></pre>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>API Endpoints</h2>
+      <p class="section-desc">Manual routing using the URL API and http.createServer. No dependencies.</p>
+      <div class="endpoint-list" id="endpoint-list"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Built with <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const ENDPOINTS = [
+      { method: "GET",  path: "/api/health", desc: "Health check" },
+      { method: "GET",  path: "/api/users/42", desc: "Get user profile (URL pattern match)" },
+      { method: "POST", path: "/api/echo", desc: "Echo request body (manual JSON parse)", body: { hello: "world", n: 42 } },
+    ]
+    const METHOD_CLASS = { GET: "get", POST: "post", PUT: "put", DELETE: "delete" }
+    function renderEndpoints(){const l=document.getElementById("endpoint-list");ENDPOINTS.forEach(e=>{const c=document.createElement("div");c.className="endpoint-card";const h=document.createElement("div");h.className="endpoint-head";const t=document.createElement("span");t.className="method-tag "+(METHOD_CLASS[e.method]||"get"),t.textContent=e.method;const p=document.createElement("span");p.className="endpoint-path",p.textContent=e.path;h.appendChild(t),h.appendChild(p);const d=document.createElement("p");d.className="endpoint-desc",d.textContent=e.desc;const a=document.createElement("div");a.className="endpoint-actions";const b=document.createElement("button");b.className="btn-test",b.textContent="Send";const r=document.createElement("div");r.className="response-box",r.innerHTML='<span class="resp-placeholder">Click "Send" to see the response…</span>';b.addEventListener("click",()=>callEndpoint(e,r,b)),a.appendChild(b),c.appendChild(h),c.appendChild(d),e.body&&((o=>{const u=document.createElement("p");u.className="endpoint-body",u.textContent="Body: "+JSON.stringify(e.body),c.appendChild(u)})()),c.appendChild(a),c.appendChild(r),l.appendChild(c)})}
+    async function callEndpoint(e,r,b){const o=b.textContent;b.textContent="";const s=document.createElement("span");s.className="spinner",b.appendChild(s),b.disabled=!0,r.innerHTML="";try{const t={method:e.method,headers:{}};e.body&&(t.headers["content-type"]="application/json",t.body=JSON.stringify(e.body));const n=await fetch(e.path,t),a=await n.text();let p=a;try{p=JSON.stringify(JSON.parse(a),null,2)}catch(e){}const c=document.createElement("span");c.className="resp-status "+(n.ok?"ok":"err"),c.textContent=n.status+" "+n.statusText,r.appendChild(c),r.appendChild(document.createTextNode("\n"+p))}catch(t){const e=document.createElement("span");e.className="resp-status err",e.textContent="Request failed",r.appendChild(e),r.appendChild(document.createTextNode("\n"+t.message))}finally{b.disabled=!1,b.textContent=o}}
+    renderEndpoints()
+  </script>
+  <script>
+    function toggleTheme(){var h=document.documentElement;h.classList.toggle('dark');localStorage.setItem('theme',h.classList.contains('dark')?'dark':'light');var b=document.querySelector('.theme-toggle');if(b)b.textContent=h.classList.contains('dark')?'☀️':'🌙'}
+    (function(){var b=document.querySelector('.theme-toggle');if(b)b.textContent=document.documentElement.classList.contains('dark')?'☀️':'🌙'})()
+  </script>
+</body>
+</html>
