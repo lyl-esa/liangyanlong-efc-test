@@ -1,0 +1,8 @@
+{
+  "name": "nextjs-template",
+  "installCommand": "pnpm install",
+  "assets": {
+    "directory": "/assets",
+    "notFoundStrategy": "404Page"
+  }
+}
