@@ -1,58 +1,42 @@
-// 纯 Node http，无任何后端框架
-// framework-checker 的 "node" 兜底 slug：package.json 存在 + server.{js,...} 存在
-const http = require('http');
-const fs = require('fs');
+// Express + app.listen 风格
+// 演示：异步路由包装（asyncHandler）+ 全局错误处理中间件 + 静态文件托管
+// 平台自动拦截 listen 端口；本地用 process.env.PORT || 3000
+const express = require('express');
 const path = require('path');
+const app = express();
 
-const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript' };
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-const server = http.createServer((req, res) => {
-  const url = new URL(req.url, 'http://x');
+// async 路由包装器：把 Promise rejection 转给错误中间件
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-  // 手动 fs 静态文件
-  if (url.pathname === '/' || url.pathname === '/style.css') {
-    const fileName = url.pathname === '/' ? 'index.html' : 'style.css';
-    const filePath = path.join(__dirname, 'public', fileName);
-    try {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      res.statusCode = 200;
-      res.setHeader('content-type', MIME[path.extname(fileName)] || 'text/plain');
-      return res.end(data);
-    } catch {
-      res.statusCode = 404;
-      return res.end('Not Found');
-    }
-  }
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, framework: 'express', flavor: 'listen', service: '留言板', message: '服务运行中' });
+});
 
-  if (url.pathname === '/api/health') {
-    res.statusCode = 200;
-    res.setHeader('content-type', 'application/json');
-    return res.end(JSON.stringify({ ok: true, framework: 'node', service: '原生路由', message: '服务运行中' }));
-  }
+app.get('/api/users/:id', asyncHandler(async (req, res) => {
+  // 模拟异步查库
+  const profile = await Promise.resolve({ name: `访客#${req.params.id}`, avatar: `/avatars/${req.params.id}.png` });
+  res.json({ user: req.params.id, source: 'express', ...profile });
+}));
 
-  const userMatch = url.pathname.match(/^\/api\/users\/([^/]+)$/);
-  if (userMatch) {
-    res.statusCode = 200;
-    res.setHeader('content-type', 'application/json');
-    return res.end(JSON.stringify({ user: userMatch[1], source: 'node', name: `用户#${userMatch[1]}` }));
-  }
+app.post('/api/echo', asyncHandler(async (req, res) => {
+  res.json({ received: req.body, echoed: true, timestamp: new Date().toISOString() });
+}));
 
-  if (req.method === 'POST' && url.pathname === '/api/echo') {
-    let buf = '';
-    req.on('data', (c) => (buf += c.toString()));
-    req.on('end', () => {
-      res.statusCode = 200;
-      res.setHeader('content-type', 'application/json');
-      let parsed;
-      try { parsed = JSON.parse(buf); } catch { parsed = buf; }
-      res.end(JSON.stringify({ received: parsed, echoed: true, timestamp: new Date().toISOString() }));
-    });
-    return;
-  }
+// 演示全局错误处理：抛出异常会被下方错误中间件捕获
+app.get('/api/error-demo', asyncHandler(async () => {
+  throw new Error('演示错误：Express 全局错误中间件已捕获');
+}));
 
-  res.statusCode = 404;
-  res.end('Not Found');
+// 全局错误处理中间件（四参数，Express 识别为错误处理器）
+app.use((err, req, res, next) => {
+  console.error('[error-handler]', err.message);
+  res.status(500).json({ error: 'internal', message: err.message });
 });
 
 const port = process.env.PORT || 3000;
-server.listen(port, () => console.log(`listening on port ${port}`));
+app.listen(port, () => {
+  console.log(`listening on port ${port}`);
+});
