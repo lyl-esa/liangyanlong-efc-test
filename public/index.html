@@ -3,61 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Node.js Example</title>
+  <title>Express Example</title>
   <link rel="stylesheet" href="style.css" />
   <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark')</script>
 </head>
 <body>
   <nav class="nav">
     <div class="container">
-      <img class="nav-logo" src="https://cdn.simpleicons.org/nodedotjs" alt="Node.js" onerror="this.style.display='none'" />
-      <span class="nav-title">Node.js</span>
-      <span class="nav-version">http</span>
+      <img class="nav-logo" src="https://cdn.simpleicons.org/express" alt="Express" onerror="this.style.display='none'" />
+      <span class="nav-title">Express</span>
+      <span class="nav-version">app.listen()</span>
       <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
   </nav>
 
   <header class="hero">
     <div class="container">
-      <h1>Node.js Example</h1>
-      <p class="tagline">Raw Node.js http module — no framework, just the standard library.</p>
-      <pre class="code-block"><code><span class="k">const</span> { createServer } = <span class="f">require</span>(<span class="s">'http'</span>)
+      <h1>Express Example</h1>
+      <p class="tagline">Fast, unopinionated, minimalist web framework for Node.js</p>
+      <pre class="code-block"><code><span class="k">const</span> express = <span class="f">require</span>(<span class="s">'express'</span>)
+<span class="k">const</span> app = <span class="f">express</span>()
 
-<span class="k">const</span> server = <span class="f">createServer</span>((req, res) => {
-  <span class="k">const</span> url = <span class="k">new</span> <span class="f">URL</span>(req.url, <span class="s">'http://localhost'</span>)
-
-  <span class="k">if</span> (url.pathname === <span class="s">'/api/health'</span>) {
-    res.<span class="f">end</span>(<span class="f">JSON</span>.<span class="f">stringify</span>({ ok: <span class="k">true</span> }))
-  }
+app.<span class="f">get</span>(<span class="s">'/api/health'</span>, (req, res) => {
+  res.<span class="f">json</span>({ ok: <span class="k">true</span>, framework: <span class="s">'express'</span> })
 })
 
-server.<span class="f">listen</span>(3000)</code></pre>
+app.<span class="f">listen</span>(<span class="s">3000</span>)</code></pre>
     </div>
   </header>
 
   <section>
     <div class="container">
       <h2>API Endpoints</h2>
-      <p class="section-desc">Manual routing using the URL API and http.createServer. No dependencies.</p>
+      <p class="section-desc">This example demonstrates async route wrappers, global error handling, and static file serving.</p>
       <div class="endpoint-list" id="endpoint-list"></div>
     </div>
   </section>
 
   <footer class="footer">
     <div class="container">
-      <p>Built with <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a></p>
+      <p>Built with <a href="https://expressjs.com" target="_blank" rel="noopener">Express</a></p>
     </div>
   </footer>
 
   <script>
     const ENDPOINTS = [
       { method: "GET",  path: "/api/health", desc: "Health check" },
-      { method: "GET",  path: "/api/users/42", desc: "Get user profile (URL pattern match)" },
-      { method: "POST", path: "/api/echo", desc: "Echo request body (manual JSON parse)", body: { hello: "world", n: 42 } },
+      { method: "GET",  path: "/api/users/42", desc: "Get user profile (async)" },
+      { method: "POST", path: "/api/echo", desc: "Echo request body", body: { hello: "world", n: 42 } },
+      { method: "GET",  path: "/api/error-demo", desc: "Trigger error (caught by error middleware)" }
     ]
     const METHOD_CLASS = { GET: "get", POST: "post", PUT: "put", DELETE: "delete" }
-    function renderEndpoints(){const l=document.getElementById("endpoint-list");ENDPOINTS.forEach(e=>{const c=document.createElement("div");c.className="endpoint-card";const h=document.createElement("div");h.className="endpoint-head";const t=document.createElement("span");t.className="method-tag "+(METHOD_CLASS[e.method]||"get"),t.textContent=e.method;const p=document.createElement("span");p.className="endpoint-path",p.textContent=e.path;h.appendChild(t),h.appendChild(p);const d=document.createElement("p");d.className="endpoint-desc",d.textContent=e.desc;const a=document.createElement("div");a.className="endpoint-actions";const b=document.createElement("button");b.className="btn-test",b.textContent="Send";const r=document.createElement("div");r.className="response-box",r.innerHTML='<span class="resp-placeholder">Click "Send" to see the response…</span>';b.addEventListener("click",()=>callEndpoint(e,r,b)),a.appendChild(b),c.appendChild(h),c.appendChild(d),e.body&&((o=>{const u=document.createElement("p");u.className="endpoint-body",u.textContent="Body: "+JSON.stringify(e.body),c.appendChild(u)})()),c.appendChild(a),c.appendChild(r),l.appendChild(c)})}
-    async function callEndpoint(e,r,b){const o=b.textContent;b.textContent="";const s=document.createElement("span");s.className="spinner",b.appendChild(s),b.disabled=!0,r.innerHTML="";try{const t={method:e.method,headers:{}};e.body&&(t.headers["content-type"]="application/json",t.body=JSON.stringify(e.body));const n=await fetch(e.path,t),a=await n.text();let p=a;try{p=JSON.stringify(JSON.parse(a),null,2)}catch(e){}const c=document.createElement("span");c.className="resp-status "+(n.ok?"ok":"err"),c.textContent=n.status+" "+n.statusText,r.appendChild(c),r.appendChild(document.createTextNode("\n"+p))}catch(t){const e=document.createElement("span");e.className="resp-status err",e.textContent="Request failed",r.appendChild(e),r.appendChild(document.createTextNode("\n"+t.message))}finally{b.disabled=!1,b.textContent=o}}
+
+    function renderEndpoints() {
+      const list = document.getElementById("endpoint-list")
+      ENDPOINTS.forEach(ep => {
+        const card = document.createElement("div")
+        card.className = "endpoint-card"
+        const head = document.createElement("div")
+        head.className = "endpoint-head"
+        const tag = document.createElement("span")
+        tag.className = "method-tag " + (METHOD_CLASS[ep.method] || "get")
+        tag.textContent = ep.method
+        const pathEl = document.createElement("span")
+        pathEl.className = "endpoint-path"
+        pathEl.textContent = ep.path
+        head.appendChild(tag); head.appendChild(pathEl)
+        const desc = document.createElement("p")
+        desc.className = "endpoint-desc"; desc.textContent = ep.desc
+        const actions = document.createElement("div")
+        actions.className = "endpoint-actions"
+        const btn = document.createElement("button")
+        btn.className = "btn-test"; btn.textContent = "Send"
+        const respBox = document.createElement("div")
+        respBox.className = "response-box"
+        respBox.innerHTML = '<span class="resp-placeholder">Click "Send" to see the response…</span>'
+        btn.addEventListener("click", () => callEndpoint(ep, respBox, btn))
+        actions.appendChild(btn)
+        card.appendChild(head); card.appendChild(desc)
+        if (ep.body) {
+          const bodyHint = document.createElement("p")
+          bodyHint.className = "endpoint-body"
+          bodyHint.textContent = "Body: " + JSON.stringify(ep.body)
+          card.appendChild(bodyHint)
+        }
+        card.appendChild(actions); card.appendChild(respBox)
+        list.appendChild(card)
+      })
+    }
+
+    async function callEndpoint(ep, respBox, btn) {
+      const original = btn.textContent
+      btn.textContent = ""
+      const spinner = document.createElement("span")
+      spinner.className = "spinner"
+      btn.appendChild(spinner)
+      btn.disabled = true
+      respBox.innerHTML = ""
+      try {
+        const opts = { method: ep.method, headers: {} }
+        if (ep.body) {
+          opts.headers["content-type"] = "application/json"
+          opts.body = JSON.stringify(ep.body)
+        }
+        const res = await fetch(ep.path, opts)
+        const text = await res.text()
+        let pretty = text
+        try { pretty = JSON.stringify(JSON.parse(text), null, 2) } catch (e) {}
+        const statusEl = document.createElement("span")
+        statusEl.className = "resp-status " + (res.ok ? "ok" : "err")
+        statusEl.textContent = res.status + " " + res.statusText
+        respBox.appendChild(statusEl)
+        respBox.appendChild(document.createTextNode("\n" + pretty))
+      } catch (err) {
+        const statusEl = document.createElement("span")
+        statusEl.className = "resp-status err"
+        statusEl.textContent = "Request failed"
+        respBox.appendChild(statusEl)
+        respBox.appendChild(document.createTextNode("\n" + err.message))
+      } finally {
+        btn.disabled = false
+        btn.textContent = original
+      }
+    }
+
     renderEndpoints()
   </script>
   <script>
