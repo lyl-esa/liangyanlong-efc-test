@@ -1,1 +1,19 @@
-{}
+{
+"name": "vite-react-template",
+  "entry": "./src/index.js",
+  "installCommand": "npm install",
+  "assets": {
+    "directory": "./dist",
+    "notFoundStrategy": "singlePageApplication"
+  },
+  "edgeFunctionFirst": [
+  ],
+
+  "regionFunction": {
+    "instanceType": "2c4g",
+    "minInstances": 1,
+    "concurrency": 200,
+    "timeout":600,
+    "idleTimeout":600
+  }
+}
