@@ -1,6 +1,6 @@
 {
 "name": "vite-react-template",
   "installCommand": "npm install",
-  "edgeFunctionFirst": []
+  "edgeFunctionFirst": true
 }
 [
