@@ -4,5 +4,6 @@
   "installCommand": "npm install",
 
   "edgeFunctionFirst": [
+"/health"
   ],
 }
