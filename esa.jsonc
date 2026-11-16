@@ -3,7 +3,6 @@
   "entry": "./index.js",
   "installCommand": "npm install",
 
-  "edgeFunctionFirst": [
-"/health"
-  ],
+  "edgeFunctionFirst": true,
 }
+[
