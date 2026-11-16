@@ -5,12 +5,4 @@
 
   "edgeFunctionFirst": [
   ],
-
-  "regionFunction": {
-    "instanceType": "2c4g",
-    "minInstances": 1,
-    "concurrency": 200,
-    "timeout":600,
-    "idleTimeout":600
-  }
 }
