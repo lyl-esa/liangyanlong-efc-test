@@ -1,6 +1,11 @@
 {
 "name": "vite-react-template",
   "installCommand": "npm install",
-  "edgeFunctionFirst": ""
+  "edgeFunctionFirst": [
+    "/health",
+    "/api/*",
+    "/api/v?/users",
+    "!/api/docs/*"
+  ]
 }
 [
