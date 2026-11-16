@@ -1,6 +1,6 @@
 {
 "name": "vite-react-template",
-  "entry": "./index.js",
+  //"entry": "./index.js",
   "installCommand": "npm install",
 
   "edgeFunctionFirst": [
