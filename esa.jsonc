@@ -2,10 +2,7 @@
 "name": "vite-react-template",
   "entry": "./src/index.js",
   "installCommand": "npm install",
-  "assets": {
-    "directory": "./dist",
-    "notFoundStrategy": "singlePageApplication"
-  },
+
   "edgeFunctionFirst": [
   ],
 
