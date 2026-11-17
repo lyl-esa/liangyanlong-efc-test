@@ -1,11 +1,10 @@
 {
 "name": "vite-react-template",
   "installCommand": "npm install",
-  "edgeFunctionFirst": [
-    "/health",
-    "/api/*",
-    "/api/v?/users",
-    "!/api/docs/*"
-  ]
+   "regionFunction": {
+    "instanceType": "2c4g",
+    "minInstances": 0,
+    "concurrency": 10
+  }
 }
 [
