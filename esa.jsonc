@@ -1,7 +1,6 @@
 {
 "name": "vite-react-template",
   "installCommand": "npm install",
-  "edgeFunctionFirst": true,
    "regionFunction": {
     "instanceType": "4c8g",
     "minInstances": 1,
