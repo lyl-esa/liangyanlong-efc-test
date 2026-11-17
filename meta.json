@@ -13,6 +13,13 @@
       "bodyContains": "Express"
     },
     {
+      "path": "/api/health",
+      "method": "GET",
+      "expectedStatus": 200,
+      "maxElapsedMs": 1000,
+       "bodyJsonSubset": { "ok": true, "framework": "express", "flavor": "listen" }
+    },
+    {
       "path": "/api/health?wait=1200",
       "method": "GET",
       "expectedStatus": 200,
