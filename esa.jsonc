@@ -3,7 +3,7 @@
   "installCommand": "npm install",
    "regionFunction": {
     "instanceType": "4c8g",
-    "minInstances": 50,
+    "minInstances": 1,
     "concurrency": 10
   }
 }
