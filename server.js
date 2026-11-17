@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const DEFAULT_WAIT_MS = Number(process.env.HEALTH_WAIT_MS) || 0;
 const MAX_WAIT_MS = Number(process.env.HEALTH_MAX_WAIT_MS) || 30000;
+let inflight = 0;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -37,11 +38,6 @@ app.get('/api/health', (req, res) => {
   inflight++;
   res.on('finish', () => inflight--);
 
-  if (block && waitMs > 0) {                     // 仅对比实验用，会卡死进程
-    const until = Date.now() + waitMs;
-    while (Date.now() < until) { /* busy wait */ }
-    return reply();
-  }
   if (waitMs > 0) return setTimeout(reply, waitMs);   // ← 默认：异步等
   return reply();
   //res.json({ ok: true, framework: 'express', flavor: 'listen', service: '留言板', message: '服务运行中' });
