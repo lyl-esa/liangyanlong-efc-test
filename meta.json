@@ -13,7 +13,7 @@
       "bodyContains": "Express"
     },
     {
-      "path": "/api/health",
+      "path": "/api/health?wait=1200",
       "method": "GET",
       "expectedStatus": 200,
       "minElapsedMs": 1200,
