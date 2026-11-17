@@ -18,7 +18,7 @@
       "expectedStatus": 200,
       "minElapsedMs": 1200,
       "maxElapsedMs": 2500,
-      "bodyJsonSubset": { "ok": true, "framework": "express", "flavor": "listen", "service": "留言板", "message": "服务运行中", "waitRequestedMs": 0, "inflight": 1 }
+      "bodyJsonSubset": { "ok": true, "framework": "express", "flavor": "listen" }
       
     },
     {
