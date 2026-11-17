@@ -4,7 +4,8 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-
+const DEFAULT_WAIT_MS = Number(process.env.HEALTH_WAIT_MS) || 0;
+const MAX_WAIT_MS = Number(process.env.HEALTH_MAX_WAIT_MS) || 30000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -12,7 +13,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, framework: 'express', flavor: 'listen', service: '留言板', message: '服务运行中' });
+  const parsed = Number(req.query.wait);
+  const waitMs = Math.min(
+    Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_WAIT_MS,
+    MAX_WAIT_MS
+  );
+  const block = req.query.block === '1';
+  const t0 = process.hrtime.bigint();
+
+  const reply = () => {
+    res.json({
+      ok: true, framework: 'express', flavor: 'listen',
+      service: '留言板', message: '服务运行中',
+      version: express.version || require('express/package.json').version,
+      time: new Date().toISOString(),
+      waitRequestedMs: waitMs,                                   // 截断后的目标延迟
+      waitedMode: block ? 'sync-block' : 'async-setTimeout',
+      waitedActualMs: Number((Number(process.hrtime.bigint() - t0) / 1e6).toFixed(1)),
+      inflight,                                                  // 回包瞬间在处理中的请求数
+    });
+  };
+
+  inflight++;
+  res.on('finish', () => inflight--);
+
+  if (block && waitMs > 0) {                     // 仅对比实验用，会卡死进程
+    const until = Date.now() + waitMs;
+    while (Date.now() < until) { /* busy wait */ }
+    return reply();
+  }
+  if (waitMs > 0) return setTimeout(reply, waitMs);   // ← 默认：异步等
+  return reply();
+  //res.json({ ok: true, framework: 'express', flavor: 'listen', service: '留言板', message: '服务运行中' });
 });
 
 app.get('/api/users/:id', asyncHandler(async (req, res) => {
