@@ -2,7 +2,7 @@
 "name": "vite-react-template",
   "installCommand": "npm install",
    "regionFunction": {
-    "instanceType": "2c4g",
+    "instanceType": "4c8g",
     "minInstances": 50,
     "concurrency": 10
   }
