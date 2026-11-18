@@ -4,6 +4,6 @@
    "regionFunction": {
   "instanceType": "2c4g",
     "minInstances": 1,
-    "concurrency": 1000
+    "concurrency": 1001
   }
 }
