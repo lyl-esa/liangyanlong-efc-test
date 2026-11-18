@@ -24,8 +24,8 @@
       "path": "/api/health?wait=1200",
       "method": "GET",
       "expectedStatus": 200,
-      "minElapsedMs": 1200,
-      "maxElapsedMs": 2500,
+      "minElapsedMs": 2000,
+      "maxElapsedMs": 300,
       "bodyJsonSubset": { "ok": true, "framework": "express", "flavor": "listen" }
       
     },
